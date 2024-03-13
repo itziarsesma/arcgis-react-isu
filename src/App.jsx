@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import { useState } from "react";
+import MapComponent from "./MapComponent";
+import AddFeatureLayer from "./AddFeatureLayer";
+import AppNav from "./AppNav";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [tools, setTools] = useState([]);
 
+  const isToolLoaded = (toolName) =>
+    tools.some((tool) => tool.key === toolName);
+  const removeTool = (toolName) =>
+    tools.filter((tool) => tool.key !== toolName);
+
+  const addLayer = () => {
+    if (isToolLoaded("layer")) {
+      const newTools = removeTool("layer");
+      setTools(newTools);
+    } else {
+      const addLyr = <AddFeatureLayer key="layer" />
+      setTools([...tools, addLyr]);
+    }
+  };
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+      <AppNav options={[{name: 'Add', function: addLayer}]} />
+      <Container
+        style={{ margin: 0, padding: 0, maxWidth: "100%", height: "100%" }}
+      >
+        <Row style={{ margin: 0, padding: 0, height: "100%" }}>
+          {tools.length > 0 && (
+            <Col style={{ margin: 0, padding: 0, maxWidth: "50%" }}>
+              {tools.map((tool) => {
+                return tool;
+              })}
+            </Col>
+          )}
+          <Col style={{ margin: 0, padding: 0 }}>
+            <MapComponent />
+          </Col>
+        </Row>
+      </Container>
+    </div>
+  );
 }
 
-export default App
+export default App;
